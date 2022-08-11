@@ -17,12 +17,12 @@
 
 The following code has been tested with Ubuntu 20.04
 
-```
+```yaml
 - name: "install mybb"
   hosts: enter your hosts file
   become: yes
   roles:
-    - ansible-exoscale-mybb
+    - ansible-role-mybb
   
   vars:
     postgresql_database_user: ""
