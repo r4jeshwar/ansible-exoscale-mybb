@@ -1,0 +1,6 @@
+---
+# tasks file for roles/servers
+
+- include: dependencies.yml
+- include: psql-setup.yml
+- include: mybb-installation.yml

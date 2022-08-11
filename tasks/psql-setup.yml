@@ -1,0 +1,63 @@
+---
+
+- name: Add postagresql-gpg-key
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: create postgresql repo link
+  command: sudo sh -c "echo \"deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main\" "
+  register: repo_link
+
+- debug: 
+    msg: "{{ repo_link.stdout }}"
+
+- name: Add postagresql repo
+  apt_repository:
+    repo: "{{ repo_link.stdout }}"
+    state: present
+    filename: pgdg
+
+- name: update all service
+  become: yes
+  apt:
+    update_cache: yes
+
+- name: Install Database in go-server
+  apt: name={{ item }} state=latest
+  with_items:
+    - postgresql
+    - postgresql-contrib
+    - postgresql-client
+    - python3-psycopg2
+    - acl
+    - python3-pip
+
+- name: hostname was used instead of path.
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/14/main/pg_hba.conf
+    search_string: 'postgres'
+    line: local   all   postgres    trust
+  
+- name: Restart postgres
+  ansible.builtin.service:
+    name: postgresql
+    state: restarted
+
+- name: Create a new database with name
+  community.postgresql.postgresql_db:
+    name: "{{ postgresql_database | default('mybb') }}" 
+
+- name: Connect to database, create user, and grant access to database
+  community.postgresql.postgresql_user:
+    db: "{{ postgresql_database | default('mybb')  }}"
+    name: "{{ postgresql_database_user | default('admin') }}"
+    password: "{{ postgresql_database_password | default('admin') }}"
+    priv: ALL
+    expires: infinity
+
+- name: Alter Role of user
+  community.postgresql.postgresql_user:
+    name: "{{ postgresql_database_user | default('admin') }}"
+    role_attr_flags: SUPERUSER,CREATEROLE,CREATEDB,REPLICATION,BYPASSRLS
+  become: yes

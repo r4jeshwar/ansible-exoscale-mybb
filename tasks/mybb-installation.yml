@@ -1,0 +1,54 @@
+---
+- uri:
+    url: https://api.github.com/repos/mybb/mybb/releases/latest
+    return_content: true
+  register: json_reponse
+
+- name: Print URI output
+  debug:
+    msg: "{{ json_reponse.json.body }}"
+
+- name: Unarchive a file that needs to be downloaded
+  ansible.builtin.unarchive:
+    src: https://resources.mybb.com/downloads/{{ json_reponse.json.body }}.zip
+    dest: /var/www/html
+    remote_src: yes
+
+- name: Copy a Upload files into the html directory
+  ansible.builtin.copy:
+    src: /var/www/html/Upload/
+    dest: /var/www/html
+    remote_src: yes 
+
+- name: Recursively remove Upload directory
+  ansible.builtin.file:
+    path: /var/www/html/Upload
+    state: absent
+
+- name: Copy a config.default.php file in inc directory
+  ansible.builtin.copy:
+    src: /var/www/html/inc/config.default.php 
+    dest: /var/www/html/inc/config.php
+    remote_src: yes
+
+- name: Remove file in inc directory (delete file)
+  ansible.builtin.file:
+    path: /var/www/html/inc/config.default.php
+    state: absent
+
+- name: Change files ownership, group and permissions
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '777'
+  with_items:
+    - /var/www/html/inc/settings.php
+    - /var/www/html/inc/config.php
+
+- name: Change directory ownership, group and permissions
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '777'
+    recurse: yes
+  with_items:
+    - /var/www/html/cache
+    - /var/www/html/uploads
