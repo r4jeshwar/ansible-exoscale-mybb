@@ -19,7 +19,7 @@ The following code has been tested with Ubuntu 20.04
 
 ```
 - name: "install mybb"
-  hosts: webserver
+  hosts: enter your hosts file
   become: yes
   roles:
     - ansible-exoscale-mybb
