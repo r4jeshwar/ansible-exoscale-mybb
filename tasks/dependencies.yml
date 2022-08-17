@@ -1,4 +1,3 @@
-#dependencies.yml
 ---
 - name: Update all packages to their latest version
   ansible.builtin.apt:
@@ -10,8 +9,11 @@
   ansible.builtin.apt:
     name:
      - software-properties-common
-     - apache2  
-    state: present
+     - apache2
+     - zip
+     - unzip
+    state: latest
+    update_cache: yes
 
 - name: 
   ansible.builtin.apt_repository:
@@ -36,6 +38,5 @@
      - php7.2-bcmath
      - php7.2-gmp
      - php7.2-zip
-     - zip
-     - unzip
-   state: present
+   state: latest
+   update_cache: yes

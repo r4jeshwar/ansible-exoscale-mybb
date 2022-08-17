@@ -14,7 +14,7 @@
     dest: /var/www/html
     remote_src: yes
 
-- name: Copy a Upload files into the html directory
+- name: Copy a files and directory in Upload directory into the html directory
   ansible.builtin.copy:
     src: /var/www/html/Upload/
     dest: /var/www/html
@@ -31,7 +31,7 @@
     dest: /var/www/html/inc/config.php
     remote_src: yes
 
-- name: Remove file in inc directory (delete file)
+- name: Remove config.default.php file in inc directory
   ansible.builtin.file:
     path: /var/www/html/inc/config.default.php
     state: absent
