@@ -20,8 +20,8 @@
     repo: ppa:ondrej/php
 
 - name: Install php
-  apt:
-   name:
+  ansible.builtin.apt:
+    name:
      - php7.2
      - libapache2-mod-php7.2
      - php7.2-common
@@ -38,5 +38,5 @@
      - php7.2-bcmath
      - php7.2-gmp
      - php7.2-zip
-   state: latest
-   update_cache: yes
+    state: latest
+    update_cache: yes

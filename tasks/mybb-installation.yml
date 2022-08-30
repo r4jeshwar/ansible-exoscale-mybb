@@ -11,8 +11,14 @@
 - name: Unarchive a file that needs to be downloaded
   ansible.builtin.unarchive:
     src: https://resources.mybb.com/downloads/{{ json_reponse.json.body }}.zip
-    dest: /var/www/html
+    dest: /var/www/html/
     remote_src: yes
+
+- name: Copy a files and directory in Upload directory into the html directory
+  ansible.builtin.copy:
+    src: /var/www/html/Upload/
+    dest: /var/www/html
+    remote_src: yes 
 
 - name: Copy a files and directory in Upload directory into the html directory
   ansible.builtin.copy:

@@ -20,19 +20,20 @@
 
 - name: update all service
   become: yes
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
 
 - name: Install postgresql
-  apt: name={{ item }} state=latest
-  with_items:
-    - postgresql
-    - postgresql-contrib
-    - postgresql-client
-    - python3-psycopg2
-    - acl
-    - python3-pip
-  update_cache: yes
+  ansible.builtin.apt:
+    name:
+     - postgresql
+     - postgresql-contrib
+     - postgresql-client
+     - python3-psycopg2
+     - acl
+     - python3-pip  
+    state: latest
+    update_cache: yes
 
 - name: Replace the word peer to trust in pg_hba.conf file.
   ansible.builtin.lineinfile:
@@ -47,18 +48,18 @@
 
 - name: Create a new database with the name
   community.postgresql.postgresql_db:
-    name: "{{ postgresql_database | default('mybb') }}" 
+    name: "{{ _postgresql_database | default('mybb') }}" 
 
 - name: Connect to the database, create a user, and grant access to the database
   community.postgresql.postgresql_user:
-    db: "{{ postgresql_database | default('mybb')  }}"
-    name: "{{ postgresql_database_user | default('admin') }}"
-    password: "{{ postgresql_database_password | default('admin') }}"
+    db: "{{ _postgresql_database | default('mybb')  }}"
+    name: "{{ _postgresql_database_user | default('admin') }}"
+    password: "{{ _postgresql_database_password | default('admin') }}"
     priv: ALL
     expires: infinity
 
 - name: Roles for user
   community.postgresql.postgresql_user:
-    name: "{{ postgresql_database_user | default('admin') }}"
+    name: "{{ _postgresql_database_user | default('admin') }}"
     role_attr_flags: SUPERUSER,CREATEROLE,CREATEDB,REPLICATION,BYPASSRLS
   become: yes
